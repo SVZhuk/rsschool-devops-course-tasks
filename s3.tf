@@ -38,7 +38,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "state_bucket_lifecycle" {
     status = "Enabled"
 
     filter {
-        prefix = ""
+      prefix = ""
     }
 
     noncurrent_version_expiration {
