@@ -1,15 +1,3 @@
-variable "vault_address" {
-  description = "Local server address for Vault"
-  type        = string
-  default     = "http://localhost:8200"
-}
-
-variable "vault_token" {
-  description = "Vault authentication token"
-  type        = string
-  sensitive   = true
-}
-
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
@@ -17,12 +5,13 @@ variable "aws_region" {
 }
 
 variable "bucket_name" {
-  description = "Name of the S3 bucket to create"
+  description = "S3 bucket name for Terraform state"
   type        = string
-  default     = "rs-devops-terraform-bucket"
+  default     = "rs-devops-tf-state"
 }
 
-data "vault_kv_secret_v2" "aws_credentials" {
-  mount = "secret"
-  name  = "aws"
+variable "github_repository" {
+  description = "GitHub repository for CI/CD"
+  type        = string
+  default     = "SVZhuk/rsschool-devops-course-tasks"
 }
