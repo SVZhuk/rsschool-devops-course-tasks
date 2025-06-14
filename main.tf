@@ -121,7 +121,8 @@ resource "aws_iam_policy" "github_actions_dynamodb_state_lock" {
         Action = [
           "dynamodb:GetItem",
           "dynamodb:PutItem",
-          "dynamodb:DeleteItem"
+          "dynamodb:DeleteItem",
+          "dynamodb:DescribeTable"
         ]
         Resource = "arn:aws:dynamodb:${var.aws_region}:*:table/rs-devops-tf-state-lock"
       }
