@@ -110,34 +110,6 @@ resource "aws_iam_role" "github_actions_role" {
   }
 }
 
-resource "aws_iam_policy" "github_actions_dynamodb_state_lock" {
-  name        = "GitHubActionsDynamoDBStateLockPolicy"
-  description = "Policy for GitHub Actions to access DynamoDB for state locking"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:DeleteItem",
-          "dynamodb:DescribeTable",
-          "dynamodb:CreateTable",
-          "dynamodb:UpdateTable",
-          "dynamodb:TagResource",
-          "dynamodb:UntagResource"
-        ]
-        Resource = "arn:aws:dynamodb:${var.aws_region}:*:table/rs-devops-tf-state-lock"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "github_actions_dynamodb_state_lock" {
-  role       = aws_iam_role.github_actions_role.name
-  policy_arn = aws_iam_policy.github_actions_dynamodb_state_lock.arn
-}
 
 # Attach policies to GitHub Actions role
 resource "aws_iam_role_policy_attachment" "github_actions_ec2" {
@@ -173,6 +145,11 @@ resource "aws_iam_role_policy_attachment" "github_actions_sqs" {
 resource "aws_iam_role_policy_attachment" "github_actions_eventbridge" {
   role       = aws_iam_role.github_actions_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_dynamodb" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
 # ARN output for GitHub Actions role
