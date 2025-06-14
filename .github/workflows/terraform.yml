@@ -84,4 +84,53 @@ jobs:
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
 
+      - name: Save Terraform Plan
+        if: always()
+        run: |
+          terraform show -no-color tfplan > plan_output.txt
       
+      - name: Upload Plan Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: |
+            tfplan
+            plan_output.txt
+
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: [terraform-check, terraform-plan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubActionsRole
+          aws-region: ${{ env.AWS_REGION}}
+          role-session-name: GithubActions-Apply
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+
+      - name: Run Terraform Apply
+        run: |
+          terraform apply -auto-approve tfplan
