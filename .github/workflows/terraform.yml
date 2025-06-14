@@ -119,7 +119,6 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: [terraform-check, terraform-plan]
-    if: needs.terraform-plan.outputs.has-changes == 'true'    
     
     steps:
       - name: Checkout code
