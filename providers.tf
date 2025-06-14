@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 
   backend "s3" {
@@ -12,7 +16,6 @@ terraform {
     region         = "us-east-1"
     encrypt        = true
     dynamodb_table = "rs-devops-tf-state-lock"
-    use_lockfile   = true
   }
 
   required_version = ">= 1.0"
@@ -20,4 +23,8 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+
+  default_tags {
+    tags = local.common_tags
+  }
 }
