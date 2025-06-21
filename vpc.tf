@@ -135,6 +135,7 @@ resource "aws_instance" "nat_instance" {
   user_data = base64encode(<<-EOF
               #!/bin/bash
               yum update -y
+              yum install -y iptables-services
               echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
               sysctl -p
               /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -142,6 +143,8 @@ resource "aws_instance" "nat_instance" {
               /sbin/iptables -A FORWARD -i eth0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
               /sbin/iptables -A FORWARD -i eth0 -o eth0 -j ACCEPT
               service iptables save
+              systemctl enable iptables
+              echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.d/custom-ip-forwarding.conf
               EOF
   )
 }

@@ -47,6 +47,14 @@ resource "aws_security_group" "private" {
     security_groups = [aws_security_group.bastion.id]
   }
 
+  # allow all traffic within the VPC
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
   # allow all outbound traffic (for NAT instance communication)  
   egress {
     from_port   = 0
