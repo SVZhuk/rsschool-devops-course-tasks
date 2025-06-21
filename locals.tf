@@ -19,4 +19,5 @@ locals {
 
   dynamodb_table_name = "${var.bucket_name}-lock"
   github_role_name    = "GitHubActionsRole"
+
 }

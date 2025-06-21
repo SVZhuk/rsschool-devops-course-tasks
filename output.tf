@@ -27,3 +27,47 @@ output "github_oidc_provider_arn" {
   description = "ARN of the GitHub OIDC provider"
   value       = aws_iam_openid_connect_provider.github_actions.arn
 }
+
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = aws_vpc.main.id
+}
+
+output "public_subnet_ids" {
+  description = "IDs of the public subnets"
+  value       = aws_subnet.public[*].id
+}
+
+output "private_subnet_ids" {
+  description = "IDs of the private subnets"
+  value       = aws_subnet.private[*].id
+}
+
+output "bastion_instance_id" {
+  description = "ID for the bastion host"
+  value       = aws_instance.bastion.id
+}
+
+output "bastion_public_ip" {
+  description = "Public IP of the bastion host"
+  value       = aws_instance.bastion.public_ip
+}
+output "bastion_private_ip" {
+  description = "Private IP of the bastion host"
+  value       = aws_instance.bastion.private_ip
+}
+
+output "nat_instance_id" {
+  description = "ID of the NAT instance"
+  value       = aws_instance.nat_instance.id
+}
+
+output "nat_instance_public_ip" {
+  description = "Public IP of the NAT instance"
+  value       = aws_instance.nat_instance.public_ip
+}
+
+output "nat_instance_private_ip" {
+  description = "Private IP of the NAT instance"
+  value       = aws_instance.nat_instance.private_ip
+}

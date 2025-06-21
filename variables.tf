@@ -15,3 +15,15 @@ variable "github_repository" {
   type        = string
   default     = "SVZhuk/rsschool-devops-course-tasks"
 }
+
+variable "key_pair_name" {
+  description = "Name of the AWS key pair for EC2 instances"
+  type        = string
+  default     = null
+}
+
+variable "my_ip_address" {
+  description = "IP address for SSH access to bastion host (CIDR format)"
+  type        = string
+  default     = null
+}
