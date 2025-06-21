@@ -2,6 +2,27 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+resource "aws_security_group" "bastion" {
+  name_prefix = "bastion-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [local.my_ip]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.common_tags
+}
+
 # NAT instance AMI
 data "aws_ami" "nat_instance" {
   most_recent = true

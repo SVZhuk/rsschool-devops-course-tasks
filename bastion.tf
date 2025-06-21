@@ -15,27 +15,6 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-resource "aws_security_group" "bastion" {
-  name_prefix = "bastion-"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [local.my_ip]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.common_tags
-}
-
 resource "aws_security_group" "private" {
   name_prefix = "private-"
   vpc_id      = aws_vpc.main.id
@@ -73,6 +52,29 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [aws_security_group.bastion.id]
   key_name               = var.key_pair_name
   tags                   = merge(local.common_tags, { Name = "bastion-az1" })
+}
+
+resource "aws_security_group_rule" "bastion_ssh_restrict" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = [local.my_ip]
+  security_group_id = aws_security_group.bastion.id
+  description       = "SSH from my IP"
+}
+
+resource "aws_security_group_rule" "bastion_ssh_remove_broad" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.bastion.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_instance" "private_az1" {
