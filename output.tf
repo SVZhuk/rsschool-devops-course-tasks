@@ -1,11 +1,11 @@
 output "s3_bucket_name" {
   description = "Name of the S3 bucket"
-  value       = aws_s3_bucket.state_bucket.id
+  value       = data.aws_s3_bucket.state_bucket.id
 }
 
 output "s3_bucket_arn" {
   description = "ARN of the S3 bucket"
-  value       = aws_s3_bucket.state_bucket.arn
+  value       = data.aws_s3_bucket.state_bucket.arn
 }
 
 output "dynamodb_table_name" {
@@ -43,31 +43,7 @@ output "private_subnet_ids" {
   value       = aws_subnet.private[*].id
 }
 
-output "bastion_instance_id" {
-  description = "ID for the bastion host"
-  value       = aws_instance.bastion.id
-}
-
-output "bastion_public_ip" {
-  description = "Public IP of the bastion host"
-  value       = aws_instance.bastion.public_ip
-}
-output "bastion_private_ip" {
-  description = "Private IP of the bastion host"
-  value       = aws_instance.bastion.private_ip
-}
-
 output "nat_instance_id" {
   description = "ID of the NAT instance"
   value       = aws_instance.nat_instance.id
-}
-
-output "nat_instance_public_ip" {
-  description = "Public IP of the NAT instance"
-  value       = aws_instance.nat_instance.public_ip
-}
-
-output "nat_instance_private_ip" {
-  description = "Private IP of the NAT instance"
-  value       = aws_instance.nat_instance.private_ip
 }

@@ -1,43 +1,6 @@
-data "aws_availability_zones" "available" {
-  state = "available"
-}
 
-resource "aws_security_group" "bastion" {
-  name_prefix = "bastion-"
-  vpc_id      = aws_vpc.main.id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [local.my_ip]
-  }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.common_tags
-}
-
-# NAT instance AMI
-data "aws_ami" "nat_instance" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
 
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -142,48 +105,40 @@ resource "aws_security_group" "nat_instance" {
 # NAT instance in AZ1 public
 resource "aws_instance" "nat_instance" {
   ami                    = data.aws_ami.nat_instance.id
-  instance_type          = "t3.nano"
+  instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.nat_instance.id]
-  key_name               = var.key_pair_name
-  source_dest_check      = false
+
+  source_dest_check = false
 
   tags = merge(local.common_tags, {
     Name = "nat-instance-az1"
     Type = "NAT"
   })
 
-  user_data = base64encode(<<-EOF
+  user_data = <<-EOF
               #!/bin/bash
               yum update -y
               yum install -y iptables-services
+              
+              # Enable IP forwarding
               echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
               sysctl -p
+              
+              # Configure NAT
               /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
               /sbin/iptables -F FORWARD
               /sbin/iptables -A FORWARD -i eth0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
               /sbin/iptables -A FORWARD -i eth0 -o eth0 -j ACCEPT
+              
+              # Make settings persistent
               service iptables save
               systemctl enable iptables
               echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.d/custom-ip-forwarding.conf
+              
+              # Add a simple health check
+              cat > /var/www/html/health.html << 'END'
+              NAT instance is running
+              END
               EOF
-  )
-}
-
-# private route table
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
-  tags   = merge(local.common_tags, { Name = "private-rt" })
-
-  route {
-    cidr_block           = "0.0.0.0/0"
-    network_interface_id = aws_instance.nat_instance.primary_network_interface_id
-  }
-}
-
-# private route table association
-resource "aws_route_table_association" "private" {
-  count          = 2
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
 }

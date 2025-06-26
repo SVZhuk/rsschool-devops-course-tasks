@@ -25,5 +25,5 @@ variable "key_pair_name" {
 variable "my_ip_address" {
   description = "IP address for SSH access to bastion host (CIDR format)"
   type        = string
-  default     = null
+  default     = "0.0.0.0/32"
 }
