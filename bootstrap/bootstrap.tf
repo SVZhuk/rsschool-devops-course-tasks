@@ -1,7 +1,7 @@
 # Resources for remote state
 resource "aws_s3_bucket" "bootstrap_state_bucket" {
   bucket = "rs-devops-tf-state"
-  tags   = {
+  tags = {
     Project     = "rsschool-devops"
     Environment = "devops"
     ManagedBy   = "terraform"
