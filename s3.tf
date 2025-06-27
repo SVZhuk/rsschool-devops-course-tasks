@@ -1,10 +1,10 @@
-resource "aws_s3_bucket" "state_bucket" {
+# Skip S3 bucket creation since it already exists
+data "aws_s3_bucket" "state_bucket" {
   bucket = var.bucket_name
-  tags   = local.common_tags
 }
 
 resource "aws_s3_bucket_versioning" "state_bucket_versioning" {
-  bucket = aws_s3_bucket.state_bucket.id
+  bucket = data.aws_s3_bucket.state_bucket.id
 
   versioning_configuration {
     status = "Enabled"
@@ -12,7 +12,7 @@ resource "aws_s3_bucket_versioning" "state_bucket_versioning" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "state_bucket_encryption" {
-  bucket = aws_s3_bucket.state_bucket.id
+  bucket = data.aws_s3_bucket.state_bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "state_bucket_encr
 }
 
 resource "aws_s3_bucket_public_access_block" "state_bucket" {
-  bucket = aws_s3_bucket.state_bucket.id
+  bucket = data.aws_s3_bucket.state_bucket.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -31,7 +31,7 @@ resource "aws_s3_bucket_public_access_block" "state_bucket" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "state_bucket_lifecycle" {
-  bucket = aws_s3_bucket.state_bucket.id
+  bucket = data.aws_s3_bucket.state_bucket.id
 
   rule {
     id     = "cleanup_old_versions"
@@ -52,7 +52,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "state_bucket_lifecycle" {
 }
 
 resource "aws_s3_bucket_policy" "state_bucket_policy" {
-  bucket = aws_s3_bucket.state_bucket.id
+  bucket = data.aws_s3_bucket.state_bucket.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -63,8 +63,8 @@ resource "aws_s3_bucket_policy" "state_bucket_policy" {
         Principal = "*"
         Action    = "s3:*"
         Resource = [
-          aws_s3_bucket.state_bucket.arn,
-          "${aws_s3_bucket.state_bucket.arn}/*"
+          data.aws_s3_bucket.state_bucket.arn,
+          "${data.aws_s3_bucket.state_bucket.arn}/*"
         ]
         Condition = {
           Bool = {

@@ -41,7 +41,7 @@ jobs:
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
-              owener: context.repo.owner,
+              owner: context.repo.owner,
               repo: context.repo.repo,
               body: "Terraform format check failed. Please run `terraform fmt` to fix formatting issues."
             })
@@ -59,6 +59,10 @@ jobs:
       plan-exitcode: ${{ steps.plan.outputs.exitcode}}
 
     steps:
+      - name: Get Runner IP
+        id: ip
+        run: echo "runner_ip=$(curl -s http://checkip.amazonaws.com)" >> $GITHUB_OUTPUT
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -75,7 +79,7 @@ jobs:
           role-session-name: GithubActions-Plan
 
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -backend-config=backend.hcl
 
       - name: Terraform Validate
         run: terraform validate
@@ -84,7 +88,7 @@ jobs:
         id: plan
         run: |
           set +e
-          terraform plan -detailed-exitcode -no-color -out=tfplan
+          terraform plan -var="my_ip_address=${{ steps.ip.outputs.runner_ip }}/32" -detailed-exitcode -no-color -out=tfplan
           PLAN_EXIT_CODE=$?
           set -e
           
@@ -119,8 +123,13 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: [terraform-check, terraform-plan]
+    if: needs.terraform-plan.outputs.has-changes == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
+      - name: Get Runner IP
+        id: ip
+        run: echo "runner_ip=$(curl -s http://checkip.amazonaws.com)" >> $GITHUB_OUTPUT
+      
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -137,7 +146,7 @@ jobs:
           role-session-name: GithubActions-Apply
 
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -backend-config=backend.hcl
 
       - name: Terraform Validate
         run: terraform validate
@@ -149,4 +158,4 @@ jobs:
 
       - name: Run Terraform Apply
         run: |
-          terraform apply -auto-approve tfplan
+          terraform apply -var="my_ip_address=${{ steps.ip.outputs.runner_ip }}/32" -auto-approve tfplan
