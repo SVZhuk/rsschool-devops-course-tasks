@@ -14,13 +14,9 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket         = "rs-devops-tf-state"
-    key            = "state/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "rs-devops-tf-state-lock"
-  }
+  # Backend configuration without hardcoded values
+  # This allows using -backend-config flags
+  backend "s3" {}
 
   required_version = ">= 1.0"
 }

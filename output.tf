@@ -10,12 +10,12 @@ output "s3_bucket_arn" {
 
 output "dynamodb_table_name" {
   description = "Name of the DynamoDB table"
-  value       = aws_dynamodb_table.terraform_state_lock.name
+  value       = "rs-devops-tf-state-lock"
 }
 
 output "dynamodb_table_arn" {
   description = "ARN of the DynamoDB table"
-  value       = aws_dynamodb_table.terraform_state_lock.arn
+  value       = "arn:aws:dynamodb:${var.aws_region}:*:table/rs-devops-tf-state-lock"
 }
 
 output "github_actions_role_arn" {
