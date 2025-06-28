@@ -27,7 +27,31 @@ variable "my_ip_address" {
   type        = string
   default     = "0.0.0.0/0"
   validation {
-    condition     = can(regex("^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}/[0-9]{1,2})$", var.my_ip_address))
+    condition     = can(cidrnetmask(var.my_ip_address))
     error_message = "The my_ip_address value must be a valid CIDR block, e.g. 1.2.3.4/32"
   }
+}
+
+variable "instance_type_nat" {
+  description = "Instance type for NAT instance"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "instance_type_bastion" {
+  description = "Instance type for bastion hosts"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "instance_type_private" {
+  description = "Instance type for private instances"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "instance_type_public" {
+  description = "Instance type for public instances"
+  type        = string
+  default     = "t2.micro"
 }

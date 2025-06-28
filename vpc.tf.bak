@@ -1,7 +1,3 @@
-
-
-
-
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -105,7 +101,7 @@ resource "aws_security_group" "nat_instance" {
 # NAT instance in AZ1 public
 resource "aws_instance" "nat_instance" {
   ami                    = data.aws_ami.nat_instance.id
-  instance_type          = "t2.micro"
+  instance_type          = var.instance_type_nat
   subnet_id              = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.nat_instance.id]
 
