@@ -25,5 +25,5 @@ output "private_az2_instance_id" {
 
 output "ssh_command" {
   description = "SSH command to connect to bastion host"
-  value       = "ssh -i bastion-key.pem ec2-user@${aws_instance.bastion.public_ip}"
+  value       = "ssh -i .ssh/bastion-key.pem ec2-user@${aws_instance.bastion.public_ip}"
 }
