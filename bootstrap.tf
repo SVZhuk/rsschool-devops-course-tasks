@@ -1,1 +1,0 @@
-# This file is deprecated - bootstrap resources moved to bootstrap directory

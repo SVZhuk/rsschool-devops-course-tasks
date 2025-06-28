@@ -1,1 +1,0 @@
-# NAT resources are now in vpc.tf - this file is deprecated
