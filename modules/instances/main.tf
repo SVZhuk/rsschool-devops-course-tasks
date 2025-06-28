@@ -36,38 +36,5 @@ resource "aws_instance" "bastion" {
   })
 }
 
-resource "aws_instance" "private_az1" {
-  ami                    = var.amazon_linux_ami_id
-  instance_type          = var.instance_type_private
-  subnet_id              = var.private_subnet_ids[0]
-  vpc_security_group_ids = [var.private_sg_id]
-  key_name               = aws_key_pair.bastion.key_name
-
-  tags = merge(var.common_tags, {
-    Name = "${var.name_prefix}-private-az1"
-  })
-}
-
-resource "aws_instance" "public_az2" {
-  ami                    = var.amazon_linux_ami_id
-  instance_type          = var.instance_type_public
-  subnet_id              = var.public_subnet_ids[1]
-  vpc_security_group_ids = [var.bastion_sg_id]
-  key_name               = aws_key_pair.bastion.key_name
-
-  tags = merge(var.common_tags, {
-    Name = "${var.name_prefix}-public-az2"
-  })
-}
-
-resource "aws_instance" "private_az2" {
-  ami                    = var.amazon_linux_ami_id
-  instance_type          = var.instance_type_private
-  subnet_id              = var.private_subnet_ids[1]
-  vpc_security_group_ids = [var.private_sg_id]
-  key_name               = aws_key_pair.bastion.key_name
-
-  tags = merge(var.common_tags, {
-    Name = "${var.name_prefix}-private-az2"
-  })
-}
+# Removed extra instances - only bastion needed
+# K3s nodes are created in the k3s module

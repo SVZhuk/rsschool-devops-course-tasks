@@ -37,3 +37,21 @@ output "s3_bucket_arn" {
   description = "ARN of the S3 bucket"
   value       = module.state.s3_bucket_arn
 }
+
+output "k3s_master_private_ip" {
+  description = "Private IP of K3s master node"
+  value       = module.k3s.k3s_master_private_ip
+}
+
+output "k3s_worker_private_ip" {
+  description = "Private IP of K3s worker node"
+  value       = module.k3s.k3s_worker_private_ip
+}
+
+output "k3s_ssh_commands" {
+  description = "SSH commands to connect to K3s nodes via bastion"
+  value = {
+    master = "ssh -i .ssh/bastion-key.pem -J ec2-user@${module.instances.bastion_public_ip} ec2-user@${module.k3s.k3s_master_private_ip}"
+    worker = "ssh -i .ssh/bastion-key.pem -J ec2-user@${module.instances.bastion_public_ip} ec2-user@${module.k3s.k3s_worker_private_ip}"
+  }
+}

@@ -38,6 +38,25 @@ variable "instance_type_nat" {
   default     = "t2.micro"
 }
 
+variable "k3s_master_instance_type" {
+  description = "Instance type for K3s master node"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "k3s_worker_instance_type" {
+  description = "Instance type for K3s worker node"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "k3s_token" {
+  description = "K3s cluster token"
+  type        = string
+  default     = "my-k3s-token-12345"
+  sensitive   = true
+}
+
 variable "instance_type_bastion" {
   description = "Instance type for bastion hosts"
   type        = string

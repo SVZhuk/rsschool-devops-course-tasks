@@ -46,6 +46,22 @@ module "instances" {
   depends_on = [module.vpc]
 }
 
+module "k3s" {
+  source = "./modules/k3s"
+
+  amazon_linux_ami_id      = data.aws_ami.amazon_linux.id
+  k3s_master_instance_type = var.k3s_master_instance_type
+  k3s_worker_instance_type = var.k3s_worker_instance_type
+  private_subnet_ids       = module.vpc.private_subnet_ids
+  k3s_sg_id                = module.security.k3s_sg_id
+  key_name                 = module.instances.key_name
+  k3s_token                = var.k3s_token
+  common_tags              = local.common_tags
+  name_prefix              = "main"
+
+  depends_on = [module.vpc, module.security, module.instances]
+}
+
 module "state" {
   source = "./modules/state"
 
