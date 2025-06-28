@@ -31,7 +31,7 @@ case "$1" in
     ;;
   init)
     echo "Initializing Terraform..."
-    terraform init
+    terraform init -backend-config=backend.hcl -reconfigure
     echo "Terraform initialized."
     ;;
   local)
@@ -48,7 +48,7 @@ case "$1" in
     echo "Creating remote state resources..."
     
     # Use the dedicated bootstrap directory
-    cd bootstrap
+    cd bootstrap || exit 1
     
     # Initialize and apply
     terraform init -reconfigure
