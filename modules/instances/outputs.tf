@@ -8,22 +8,14 @@ output "bastion_instance_id" {
   value       = aws_instance.bastion.id
 }
 
-output "private_az1_instance_id" {
-  description = "ID of the private AZ1 instance"
-  value       = aws_instance.private_az1.id
-}
-
-output "public_az2_instance_id" {
-  description = "ID of the public AZ2 instance"
-  value       = aws_instance.public_az2.id
-}
-
-output "private_az2_instance_id" {
-  description = "ID of the private AZ2 instance"
-  value       = aws_instance.private_az2.id
-}
+# Removed outputs for deleted instances
 
 output "ssh_command" {
   description = "SSH command to connect to bastion host"
   value       = "ssh -i .ssh/bastion-key.pem ec2-user@${aws_instance.bastion.public_ip}"
+}
+
+output "key_name" {
+  description = "Name of the AWS key pair"
+  value       = aws_key_pair.bastion.key_name
 }

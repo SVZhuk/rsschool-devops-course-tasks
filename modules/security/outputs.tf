@@ -18,6 +18,11 @@ output "nat_instance_sg_id" {
   value       = aws_security_group.nat_instance.id
 }
 
+output "k3s_sg_id" {
+  description = "ID of the K3s security group"
+  value       = aws_security_group.k3s.id
+}
+
 output "all_security_group_ids" {
   description = "Map of all security group IDs"
   value = {
@@ -25,5 +30,6 @@ output "all_security_group_ids" {
     private      = aws_security_group.private.id
     web          = aws_security_group.web.id
     nat_instance = aws_security_group.nat_instance.id
+    k3s          = aws_security_group.k3s.id
   }
 }
